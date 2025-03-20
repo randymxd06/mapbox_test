@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Mapbox GL JS map</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+
+    <!--======
+        MAP
+    ==========-->
+    <div id="map"></div>
+
+    <!--========
+        MODAL
+    ============-->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-description"></p>
+            <button id="modal-button">Action</button>
+        </div>
+    </div>
+
+    <!--=============
+        MAP SWITCH
+    =================-->
+    <div id="map-switch">
+        <button id="normal-view" class="active">
+            <i class="fas fa-map"></i>
+        </button>
+        <button id="satellite-view">
+            <i class="fas fa-satellite"></i>
+        </button>
+    </div>
+    
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
