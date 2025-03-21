@@ -80,22 +80,136 @@ const getLocation = async () => {
             return el;
         };
 
+        // ADD A SOURCE AND LAYER FOR THE PATH //
+        map.on('load', () => {
+
+            map.addSource('route', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': []
+                    }
+                }
+            });
+
+            map.addLayer({
+                'id': 'route',
+                'type': 'line',
+                'source': 'route',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': '#3b82f6',
+                    'line-width': 4
+                }
+            });
+
+        });
+
+        // FUNCTION TO OBTAIN A ROUTE USING THE MAPBOX DIRECTIONS API //
+        const getRoute = async (start, end) => {
+
+            const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.routes && data.routes.length > 0) {
+
+                return data.routes[0].geometry.coordinates;
+
+            } else {
+
+                throw new Error("The route could not be calculated.");
+
+            }
+
+        };
+
+        // VARIABLE TO STORE THE SELECTED LOCATION //
+        let selectedLocation = null;
+
         // ADD A MARKER AT THE OBTAINED LOCATIONS //
         locations.forEach(location => {
 
             const marker = new mapboxgl.Marker(createCustomMarker(location.color)).setLngLat([location.longitud, location.latitud]).addTo(map);
 
             // ADD CLICK EVENT TO THE MARKER //
-            marker.getElement().addEventListener('click', () => {
+            marker.getElement().addEventListener('click', async () => {
+
+                // SAVE THE SELECTED LOCATION //
+                selectedLocation = location;
 
                 // SET THE MODAL CONTENT //
                 document.getElementById('modal-title').textContent = location.nombre;
                 document.getElementById('modal-description').textContent = `Latitud: ${location.latitud}, Longitud: ${location.longitud}`;
 
                 // SHOW THE MODAL //
-                document.getElementById('modal').style.display = 'block';
+                document.getElementById('location-modal').style.display = 'block';
 
             });
+
+        });
+
+        // MODAL “ACTION” BUTTON CLICK EVENT //
+        document.getElementById('location-modal-button').addEventListener('click', async (event) => {
+
+            event.preventDefault();
+
+            if (selectedLocation) {
+
+                try {
+
+                    const start = [myLocation.longitud, myLocation.latitud];
+                    const end = [selectedLocation.longitud, selectedLocation.latitud];
+
+                    const routeCoordinates = await getRoute(start, end);
+
+                    // UPDATE THE ROUTE SOURCE //
+                    const routeSource = map.getSource('route');
+                    routeSource.setData({
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': {
+                            'type': 'LineString',
+                            'coordinates': routeCoordinates
+                        }
+                    });
+
+                    // CLOSE THE MODAL //
+                    document.getElementById('location-modal').style.display = 'none';
+
+                } catch (error) {
+
+                    console.error("Error when calculating the route:", error);
+
+                }
+
+            }
+
+        });
+
+        // EVENT OF CLICKING ON THE “REMOVE ROUTE” BUTTON //
+        document.getElementById('remove-route-button').addEventListener('click', () => {
+
+            // CLEAN THE ROUTE //
+            const routeSource = map.getSource('route');
+            routeSource.setData({
+                'type': 'Feature',
+                'properties': {},
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': []
+                }
+            });
+
+            // CLOSE THE MODAL //
+            document.getElementById('location-modal').style.display = 'none';
 
         });
 
@@ -112,13 +226,13 @@ const getLocation = async () => {
 
         // CLOSE THE MODAL WHEN THE CLOSE BUTTON IS CLICKED //
         document.querySelector('.close').addEventListener('click', () => {
-            document.getElementById('modal').style.display = 'none';
+            document.getElementById('location-modal').style.display = 'none';
         });
 
         // CLOSE THE MODAL WHEN CLICKING OUTSIDE OF IT //
         window.addEventListener('click', (event) => {
-            if (event.target === document.getElementById('modal')) {
-                document.getElementById('modal').style.display = 'none';
+            if (event.target === document.getElementById('location-modal')) {
+                document.getElementById('location-modal').style.display = 'none';
             }
         });
 
