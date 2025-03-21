@@ -149,6 +149,18 @@ const getLocation = async () => {
         // STORES THE LOCATION THAT HAS THE TRACED ROUTE //
         let activeLocation = null;
 
+        // FUNCTION TO SHOW BOTTOM SHEET //
+        const showBottomSheet = () => {
+            const bottomSheet = document.getElementById('bottom-sheet');
+            bottomSheet.classList.add('show');
+        };
+
+        // FUNCTION TO HIDE BOTTOM SHEET //
+        const hideBottomSheet = () => {
+            const bottomSheet = document.getElementById('bottom-sheet');
+            bottomSheet.classList.remove('show');
+        };
+
         // ADD A MARKER AT THE OBTAINED LOCATIONS //
         locations.forEach(location => {
 
@@ -162,26 +174,29 @@ const getLocation = async () => {
 
                 // IF THERE IS AN ACTIVE ROUTE AND THE SELECTED MARKER IS THE SAME, DISPLAY “REMOVE ROUTE” //
                 if (isRouteActive && activeLocation === selectedLocation) {
-
                     traceButton.style.display = 'none';
-
                     removeButton.style.display = 'inline-block';
-
+                    document.getElementById('bottom-sheet-button').style.display = 'none';
+                    document.getElementById('remove-route-bottom-sheet-button').style.display = 'inline-block';
                 } else {
-
-                    // RESET BUTTON STATUS IF ANOTHER MARKER IS SELECTED //
                     traceButton.style.display = 'inline-block';
-
                     removeButton.style.display = 'none';
-
+                    document.getElementById('bottom-sheet-button').style.display = 'inline-block';
+                    document.getElementById('remove-route-bottom-sheet-button').style.display = 'none';
                 }
 
-                // SET THE MODAL CONTENT //
+                // SET THE CONTENT FOR BOTH MODAL AND BOTTOM SHEET //
                 document.getElementById('modal-title').textContent = location.nombre;
                 document.getElementById('modal-description').textContent = `Latitud: ${location.latitud}, Longitud: ${location.longitud}`;
+                document.getElementById('bottom-sheet-title').textContent = location.nombre;
+                document.getElementById('bottom-sheet-description').textContent = `Latitud: ${location.latitud}, Longitud: ${location.longitud}`;
 
-                // SHOW THE MODAL //
-                document.getElementById('location-modal').style.display = 'block';
+                // SHOW MODAL OR BOTTOM SHEET BASED ON SCREEN SIZE /
+                if (window.innerWidth <= 768) {
+                    showBottomSheet();
+                } else {
+                    document.getElementById('location-modal').style.display = 'block';
+                }
 
             });
 
@@ -190,21 +205,17 @@ const getLocation = async () => {
         // GET THE BUTTONS //
         const traceButton = document.getElementById('location-modal-button');
         const removeButton = document.getElementById('remove-route-button');
+        const bottomSheetTraceButton = document.getElementById('bottom-sheet-button');
+        const bottomSheetRemoveButton = document.getElementById('remove-route-bottom-sheet-button');
 
-        // MODAL “ACTION” BUTTON CLICK EVENT //
-        traceButton.addEventListener('click', async (event) => {
-
-            event.preventDefault();
-
+        // FUNCTION TO TRACE ROUTE //
+        const traceRoute = async () => {
             if (selectedLocation) {
-
                 try {
-
                     const start = [myLocation.longitud, myLocation.latitud];
                     const end = [selectedLocation.longitud, selectedLocation.latitud];
-
                     const routeCoordinates = await getRoute(start, end);
-
+        
                     // UPDATE THE ROUTE SOURCE //
                     const routeSource = map.getSource('route');
                     routeSource.setData({
@@ -215,31 +226,31 @@ const getLocation = async () => {
                             'coordinates': routeCoordinates
                         }
                     });
-
+        
                     // MARK THE ROUTE AS ACTIVE AND UPDATE BUTTONS //
                     isRouteActive = true;
                     activeLocation = selectedLocation;
-
+        
                     // HIDE THE TRACE BUTTON AND SHOW REMOVE //
                     traceButton.style.display = 'none';
                     removeButton.style.display = 'inline-block';
-
-                    // CLOSE THE MODAL //
-                    document.getElementById('location-modal').style.display = 'none';
-
+                    bottomSheetTraceButton.style.display = 'none';
+                    bottomSheetRemoveButton.style.display = 'inline-block';
+        
+                    // CLOSE THE MODAL OR BOTTOM SHEET //
+                    if (window.innerWidth <= 768) {
+                        hideBottomSheet();
+                    } else {
+                        document.getElementById('location-modal').style.display = 'none';
+                    }
                 } catch (error) {
-
                     console.error("Error when calculating the route:", error);
-
                 }
-
             }
+        };
 
-        });
-
-        // CLICK ON “REMOVE ROUTE” EVENT //
-        removeButton.addEventListener('click', () => {
-
+        // FUNCTION TO REMOVE ROUTE //
+        const removeRoute = () => {
             // CLEAN THE ROUTE //
             const routeSource = map.getSource('route');
             routeSource.setData({
@@ -250,18 +261,44 @@ const getLocation = async () => {
                     'coordinates': []
                 }
             });
-
+        
             // MARK ROUTE AS INACTIVE AND UPDATE BUTTONS //
             isRouteActive = false;
             activeLocation = null;
-
+        
             // SHOW TRACE BUTTON AND HIDE REMOVE //
             traceButton.style.display = 'inline-block';
             removeButton.style.display = 'none';
+            bottomSheetTraceButton.style.display = 'inline-block';
+            bottomSheetRemoveButton.style.display = 'none';
+        
+            // CLOSE THE MODAL OR BOTTOM SHEET //
+            if (window.innerWidth <= 768) {
+                hideBottomSheet();
+            } else {
+                document.getElementById('location-modal').style.display = 'none';
+            }
+        };
 
-            // CLOSE THE MODAL //
-            document.getElementById('location-modal').style.display = 'none';
+        // MODAL “ACTION” BUTTON CLICK EVENT //
+        traceButton.addEventListener('click', traceRoute);
+        bottomSheetTraceButton.addEventListener('click', traceRoute);
 
+        // CLICK ON “REMOVE ROUTE” EVENT //
+        removeButton.addEventListener('click', removeRoute);
+        bottomSheetRemoveButton.addEventListener('click', removeRoute);
+
+        // CLOSE BOTTOM SHEET WHEN CLOSE BUTTON IS CLICKED
+        document.querySelector('.close-bottom-sheet').addEventListener('click', () => {
+            hideBottomSheet();
+        });
+
+        // CLOSE BOTTOM SHEET WHEN CLICKING OUTSIDE
+        window.addEventListener('click', (event) => {
+            const bottomSheet = document.getElementById('bottom-sheet');
+            if (event.target === bottomSheet) {
+                hideBottomSheet();
+            }
         });
 
         // ADJUST ZOOM TO MAKE ALL MARKERS VISIBLE //
@@ -318,7 +355,7 @@ const getLocation = async () => {
                 getRoute(start, end).then(routeCoordinates => {
 
                     const routeSource = map.getSource('route');
-                    
+
                     routeSource.setData({
                         'type': 'Feature',
                         'properties': {},
@@ -344,7 +381,7 @@ const getLocation = async () => {
                 removeButton.style.display = 'none';
 
             }
-            
+
         });
 
         // ADD THE “LOCATE ME” BUTTON //
