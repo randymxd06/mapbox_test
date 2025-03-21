@@ -141,6 +141,21 @@ const getLocation = async () => {
             normalViewButton.classList.remove('active');
         });
 
+        // ADD THE “LOCATE ME” BUTTON //
+        const locateMeButton = document.getElementById('locate-me');
+
+        locateMeButton.addEventListener('click', () => {
+            getLocation().then(location => {
+                map.flyTo({
+                    center: [location.longitud, location.latitud],
+                    zoom: 15, // ADJUSTS ZOOM AS NEEDED //
+                    essential: true // THIS ANIMATION SHALL BE CONSIDERED ESSENTIAL //
+                });
+            }).catch(error => {
+                console.error("Error obtaining location:", error);
+            });
+        });
+
     } catch (error) {
 
         console.error("Error:", error);
