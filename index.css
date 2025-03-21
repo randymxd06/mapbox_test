@@ -226,6 +226,7 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
+  height: 40%;
   background-color: white;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -233,6 +234,22 @@ body {
   z-index: 1000;
   transform: translateY(100%);
   transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
+}
+
+.bottom-sheet {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.bottom-sheet-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
 }
 
 .bottom-sheet-content {
@@ -246,9 +263,9 @@ body {
 
 .close-bottom-sheet {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
+  top: 5%;
+  right: 5%;
+  font-size: 30px;
   cursor: pointer;
   color: #aaa;
 }
@@ -265,10 +282,9 @@ body {
   z-index: 999;
 }
 
-/*======================================
-  STYLES FOR THE “TRACE ROUTE” BUTTON
-  (APPLIED TO BOTH MODAL AND BOTTOM SHEET)
-========================================*/
+/*===============================================================================
+  STYLES FOR THE “TRACE ROUTE” BUTTON (APPLIED TO BOTH MODAL AND BOTTOM SHEET)
+=================================================================================*/
 #location-modal-button,
 #bottom-sheet-button {
   margin-top: 20px;
@@ -287,10 +303,9 @@ body {
   background-color: #45a049;
 }
 
-/*=======================================
-  STYLES FOR THE “REMOVE ROUTE” BUTTON
-  (APPLIED TO BOTH MODAL AND BOTTOM SHEET)
-=========================================*/
+/*================================================================================
+  STYLES FOR THE “REMOVE ROUTE” BUTTON (APPLIED TO BOTH MODAL AND BOTTOM SHEET)
+==================================================================================*/
 #remove-route-button,
 #remove-route-bottom-sheet-button {
   margin-top: 10px;
@@ -314,16 +329,15 @@ body {
 ==============================*/
 @media (max-width: 768px) {
   .modal {
-    display: none; /* Oculta el modal en móviles */
+    display: none;
   }
-
   .bottom-sheet {
-    display: block; /* Muestra el BottomSheet en móviles */
+    display: block;
   }
 }
 
 @media (min-width: 769px) {
   .bottom-sheet {
-    display: none; /* Oculta el BottomSheet en pantallas grandes */
+    display: none;
   }
 }
