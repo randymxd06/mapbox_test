@@ -134,6 +134,12 @@ const getLocation = async () => {
         // VARIABLE TO STORE THE SELECTED LOCATION //
         let selectedLocation = null;
 
+        // GLOBAL VARIABLE TO TRACK THE STATUS OF THE ROUTE //
+        let isRouteActive = false;
+
+        // STORES THE LOCATION THAT HAS THE TRACED ROUTE //
+        let activeLocation = null;
+
         // ADD A MARKER AT THE OBTAINED LOCATIONS //
         locations.forEach(location => {
 
@@ -144,6 +150,16 @@ const getLocation = async () => {
 
                 // SAVE THE SELECTED LOCATION //
                 selectedLocation = location;
+
+                // IF THERE IS AN ACTIVE ROUTE AND THE SELECTED MARKER IS THE SAME, DISPLAY “REMOVE ROUTE” //
+                if (isRouteActive && activeLocation === selectedLocation) {
+                    traceButton.style.display = 'none';
+                    removeButton.style.display = 'inline-block';
+                } else {
+                    // RESET BUTTON STATUS IF ANOTHER MARKER IS SELECTED //
+                    traceButton.style.display = 'inline-block';
+                    removeButton.style.display = 'none';
+                }
 
                 // SET THE MODAL CONTENT //
                 document.getElementById('modal-title').textContent = location.nombre;
@@ -156,8 +172,12 @@ const getLocation = async () => {
 
         });
 
+        // GET THE BUTTONS //
+        const traceButton = document.getElementById('location-modal-button');
+        const removeButton = document.getElementById('remove-route-button');
+
         // MODAL “ACTION” BUTTON CLICK EVENT //
-        document.getElementById('location-modal-button').addEventListener('click', async (event) => {
+        traceButton.addEventListener('click', async (event) => {
 
             event.preventDefault();
 
@@ -181,8 +201,13 @@ const getLocation = async () => {
                         }
                     });
 
-                    // CLOSE THE MODAL //
-                    document.getElementById('location-modal').style.display = 'none';
+                    // MARK THE ROUTE AS ACTIVE AND UPDATE BUTTONS //
+                    isRouteActive = true;
+                    activeLocation = selectedLocation;
+
+                    // HIDE THE TRACE BUTTON AND SHOW REMOVE //
+                    traceButton.style.display = 'none';
+                    removeButton.style.display = 'inline-block';
 
                 } catch (error) {
 
@@ -194,8 +219,8 @@ const getLocation = async () => {
 
         });
 
-        // EVENT OF CLICKING ON THE “REMOVE ROUTE” BUTTON //
-        document.getElementById('remove-route-button').addEventListener('click', () => {
+        // CLICK ON “REMOVE ROUTE” EVENT //
+        removeButton.addEventListener('click', () => {
 
             // CLEAN THE ROUTE //
             const routeSource = map.getSource('route');
@@ -208,8 +233,13 @@ const getLocation = async () => {
                 }
             });
 
-            // CLOSE THE MODAL //
-            document.getElementById('location-modal').style.display = 'none';
+            // MARK ROUTE AS INACTIVE AND UPDATE BUTTONS //
+            isRouteActive = false;
+            activeLocation = null;
+
+            // SHOW TRACE BUTTON AND HIDE REMOVE //
+            traceButton.style.display = 'inline-block';
+            removeButton.style.display = 'none';
 
         });
 
