@@ -80,35 +80,44 @@ const getLocation = async () => {
             return el;
         };
 
-        // ADD A SOURCE AND LAYER FOR THE PATH //
-        map.on('load', () => {
+        // FUNCTION TO ADD THE ROUTE SOURCE AND LAYER //
+        const addRouteSourceAndLayer = (map) => {
 
-            map.addSource('route', {
-                'type': 'geojson',
-                'data': {
-                    'type': 'Feature',
-                    'properties': {},
-                    'geometry': {
-                        'type': 'LineString',
-                        'coordinates': []
+            if (!map.getSource('route')) {
+
+                map.addSource('route', {
+                    'type': 'geojson',
+                    'data': {
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': {
+                            'type': 'LineString',
+                            'coordinates': []
+                        }
                     }
-                }
-            });
+                });
 
-            map.addLayer({
-                'id': 'route',
-                'type': 'line',
-                'source': 'route',
-                'layout': {
-                    'line-join': 'round',
-                    'line-cap': 'round'
-                },
-                'paint': {
-                    'line-color': '#3b82f6',
-                    'line-width': 4
-                }
-            });
+                map.addLayer({
+                    'id': 'route',
+                    'type': 'line',
+                    'source': 'route',
+                    'layout': {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    'paint': {
+                        'line-color': '#3b82f6',
+                        'line-width': 4
+                    }
+                });
 
+            }
+
+        };
+
+        // ADD THE ROUTE SOURCE AND LAYER WHEN THE MAP IS LOADED //
+        map.on('load', () => {
+            addRouteSourceAndLayer(map);
         });
 
         // FUNCTION TO OBTAIN A ROUTE USING THE MAPBOX DIRECTIONS API //
@@ -282,6 +291,48 @@ const getLocation = async () => {
             map.setStyle('mapbox://styles/mapbox/satellite-v9');
             satelliteViewButton.classList.add('active');
             normalViewButton.classList.remove('active');
+        });
+
+        // RE-ADD ROUTE SOURCE AND LAYER WHEN STYLE CHANGES //
+        map.on('styledata', () => {
+
+            addRouteSourceAndLayer(map);
+
+            if (isRouteActive && activeLocation) {
+
+                const start = [myLocation.longitud, myLocation.latitud];
+                const end = [activeLocation.longitud, activeLocation.latitud];
+
+                getRoute(start, end).then(routeCoordinates => {
+
+                    const routeSource = map.getSource('route');
+                    
+                    routeSource.setData({
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': {
+                            'type': 'LineString',
+                            'coordinates': routeCoordinates
+                        }
+                    });
+                }).catch(error => {
+
+                    console.error("Error when recalculating the route:", error);
+
+                });
+
+                traceButton.style.display = 'none';
+
+                removeButton.style.display = 'inline-block';
+
+            } else {
+
+                traceButton.style.display = 'inline-block';
+
+                removeButton.style.display = 'none';
+
+            }
+            
         });
 
         // ADD THE “LOCATE ME” BUTTON //
