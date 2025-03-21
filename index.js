@@ -2,15 +2,14 @@
  * LOCATIONS ARRAY
 =====================*/
 const locations = [
-    { nombre: "Monumento a los Héroes de la Restauración", latitud: 19.4516, longitud: -70.6970 },
-    { nombre: "Catedral de Santiago Apóstol", latitud: 19.4512, longitud: -70.6934 },
-    { nombre: "Parque Duarte", latitud: 19.4508, longitud: -70.6925 },
-    { nombre: "Centro León", latitud: 19.4425, longitud: -70.6836 },
-    { nombre: "Estadio Cibao", latitud: 19.4367, longitud: -70.7186 },
-    { nombre: "Mercado Modelo", latitud: 19.4493, longitud: -70.6918 },
-    { nombre: "Universidad Tecnológica de Santiago (UTESA)", latitud: 19.4386, longitud: -70.7005 },
-    { nombre: "Plaza Internacional", latitud: 19.4567, longitud: -70.6889 },
-    { nombre: "PUCMM (Pontificia Universidad Católica Madre y Maestra)", latitud: 19.4420, longitud: -70.7130 },
+    { nombre: "Monumento a los Héroes de la Restauración", latitud: 19.4516, longitud: -70.6970, color: 'hsl(0, 97%, 50%)' },
+    { nombre: "Catedral de Santiago Apóstol", latitud: 19.4512, longitud: -70.6934, color: 'hsl(118, 97%, 50%)' },
+    { nombre: "Centro León", latitud: 19.4425, longitud: -70.6836, color: 'hsl(0, 97%, 50%)' },
+    { nombre: "Estadio Cibao", latitud: 19.4367, longitud: -70.7186, color: 'hsl(0, 97%, 50%)' },
+    { nombre: "Mercado Modelo", latitud: 19.4493, longitud: -70.6918, color: 'hsl(0, 97%, 50%)' },
+    { nombre: "Universidad Tecnológica de Santiago (UTESA)", latitud: 19.4386, longitud: -70.7005, color: 'hsl(118, 97%, 50%)' },
+    { nombre: "Plaza Internacional", latitud: 19.4567, longitud: -70.6889, color: 'hsl(0, 97%, 50%)' },
+    { nombre: "PUCMM (Pontificia Universidad Católica Madre y Maestra)", latitud: 19.4420, longitud: -70.7130, color: 'hsl(118, 97%, 50%)' },
 ];
 
 /**==========================================================
@@ -53,19 +52,19 @@ const getLocation = async () => {
 
     try {
 
-        const location = await getLocation();
+        const myLocation = await getLocation();
 
         // CONFIGURE THE MAP WITH MAPBOX //
         mapboxgl.accessToken = "pk.eyJ1IjoicmFuZHloeXRlY2giLCJhIjoiY204aG9rN3Q0MDNucDJrcHU0MjFhNmxiMCJ9.060bIhavAGwruP3v3JTkxg";
 
         const map = new mapboxgl.Map({
             container: "map",
-            center: [location.longitud, location.latitud], // USE THE COORDINATES OBTAINED //
+            center: [myLocation.longitud, myLocation.latitud], // USE THE COORDINATES OBTAINED //
             zoom: 5,
             style: "mapbox://styles/mapbox/streets-v12",
         });
 
-        new mapboxgl.Marker().setLngLat([location.longitud, location.latitud]).addTo(map)
+        new mapboxgl.Marker().setLngLat([myLocation.longitud, myLocation.latitud]).addTo(map)
 
         // FUNCTION TO CREATE A CUSTOM MARKER WITH A PIN ICON
         const createCustomMarker = (color) => {
@@ -84,7 +83,7 @@ const getLocation = async () => {
         // ADD A MARKER AT THE OBTAINED LOCATIONS //
         locations.forEach(location => {
 
-            const marker = new mapboxgl.Marker(createCustomMarker('hsl(118, 97%, 50%)')).setLngLat([location.longitud, location.latitud]).addTo(map);
+            const marker = new mapboxgl.Marker(createCustomMarker(location.color)).setLngLat([location.longitud, location.latitud]).addTo(map);
 
             // ADD CLICK EVENT TO THE MARKER //
             marker.getElement().addEventListener('click', () => {
