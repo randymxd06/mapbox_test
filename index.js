@@ -162,12 +162,18 @@ const getLocation = async () => {
 
                 // IF THERE IS AN ACTIVE ROUTE AND THE SELECTED MARKER IS THE SAME, DISPLAY “REMOVE ROUTE” //
                 if (isRouteActive && activeLocation === selectedLocation) {
+
                     traceButton.style.display = 'none';
+
                     removeButton.style.display = 'inline-block';
+
                 } else {
+
                     // RESET BUTTON STATUS IF ANOTHER MARKER IS SELECTED //
                     traceButton.style.display = 'inline-block';
+
                     removeButton.style.display = 'none';
+
                 }
 
                 // SET THE MODAL CONTENT //
@@ -218,6 +224,9 @@ const getLocation = async () => {
                     traceButton.style.display = 'none';
                     removeButton.style.display = 'inline-block';
 
+                    // CLOSE THE MODAL //
+                    document.getElementById('location-modal').style.display = 'none';
+
                 } catch (error) {
 
                     console.error("Error when calculating the route:", error);
@@ -249,6 +258,9 @@ const getLocation = async () => {
             // SHOW TRACE BUTTON AND HIDE REMOVE //
             traceButton.style.display = 'inline-block';
             removeButton.style.display = 'none';
+
+            // CLOSE THE MODAL //
+            document.getElementById('location-modal').style.display = 'none';
 
         });
 
