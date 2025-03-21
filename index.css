@@ -57,6 +57,18 @@ body {
   font-size: 18px;
 }
 
+/*============================
+  MEDIA QUERIES FOR MOBILE
+==============================*/
+@media (max-width: 768px) {
+  #map-switch {
+    top: auto;
+    bottom: 20px;
+    left: 20%;
+    transform: translateX(-50%);
+  }
+}
+
 /*======================================
   STYLES FOR THE “TRACE ROUTE” BUTTON
 ========================================*/
@@ -203,16 +215,4 @@ body {
 
 #modal-button:hover {
   background-color: #45a049;
-}
-
-/*============================
-  MEDIA QUERIES FOR MOBILE
-==============================*/
-@media (max-width: 768px) {
-  #map-switch {
-    top: auto;
-    bottom: 20px;
-    left: 20%;
-    transform: translateX(-50%);
-  }
 }
