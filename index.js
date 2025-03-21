@@ -56,7 +56,7 @@ const getLocation = async () => {
         const location = await getLocation();
 
         // CONFIGURE THE MAP WITH MAPBOX //
-        mapboxgl.accessToken = "pk.eyJ1IjoicmFuZHloeXRlY2giLCJhIjoiY204ZzltZHhlMGtuNDJqb2lpdzlqdTl4aSJ9.tpQNO6zp8N7tgvkCuHpvhw";
+        mapboxgl.accessToken = "pk.eyJ1IjoicmFuZHloeXRlY2giLCJhIjoiY204aG9rN3Q0MDNucDJrcHU0MjFhNmxiMCJ9.060bIhavAGwruP3v3JTkxg";
 
         const map = new mapboxgl.Map({
             container: "map",

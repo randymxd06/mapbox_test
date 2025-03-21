@@ -17,6 +17,10 @@ body {
   z-index: 0;
 }
 
+.mapboxgl-ctrl-bottom-left {
+  display: none;
+}
+
 /*============================
   TOGGLE VIEW BUTTON STYLES
 ==============================*/
@@ -102,4 +106,16 @@ body {
 
 #modal-button:hover {
   background-color: #45a049;
+}
+
+/*============================
+  MEDIA QUERIES FOR MOBILE
+==============================*/
+@media (max-width: 768px) {
+  #map-switch {
+    top: auto;
+    bottom: 20px;
+    left: 20%;
+    transform: translateX(-50%);
+  }
 }
